@@ -44,10 +44,20 @@ def process_dir(args, path):
                 continue
             process_document(args, root, filename)
 
+def process_filelist(args, filelist):
+    for filename in filelist:
+        # if absolut pathname? If not add relative pathname
+        # to filename
+        # check if file exists, if not ignore it, warn user
+        pass
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--flat-out", nargs='?', type=str, default=None)
+    parser.add_argument("--documents", nargs='?', type=str, default=None)
     args = parser.parse_args()
+    if args.documents:
+        args.documents = filter(None, args.documents.split(','))
     return args
 
 def main():
@@ -55,7 +65,10 @@ def main():
     if args.flat_out and not os.path.exists(args.flat_out):
         print('generate directory {}'.format(args.flat_out))
         os.makedirs(args.flat_out)
-    process_dir(args, ".")
+    if not args.documents:
+        process_dir(args, ".")
+    else:
+        process_filelist(args, args.documents)
 
 if __name__ == '__main__':
   main()
