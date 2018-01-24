@@ -5,6 +5,12 @@ import subprocess
 import argparse
 import sys
 
+class MetaInfo:
+
+    def __init__(self):
+        self.template = 'modern'
+
+
 
 def sanity_file(path, filename):
     full = os.path.join(path, filename)
