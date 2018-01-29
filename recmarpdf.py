@@ -4,11 +4,26 @@ import os
 import subprocess
 import argparse
 import sys
+import json
 
 class MetaInfo:
 
-    def __init__(self):
+    def __init__(self, metafile=None):
         self.template = 'modern'
+        if metafile:
+            self.init_metafile(metafile)
+
+    def parse_file(self, path):
+        with open(path) as fd:
+            return json.load(fd)
+
+    def init_metafile(self, metafile):
+        data = self.parse_file(metafile)
+        if 'template' in data:
+            if data['template'] == 'modern':
+                self.template = 'modern'
+            else:
+                raise Exception('template not supported')
 
 
 
@@ -18,17 +33,29 @@ def sanity_file(path, filename):
     with open(full, 'r') as fd:
         for line in fd:
             content_new += line
-
     newname = "{}-pandoc-modified-tmp.md".format(filename[0:-3])
     full_new = os.path.join(path, newname)
-
     fd = open(full_new, "w")
     fd.write(content_new)
     fd.close()
     return full_new
 
+def meta_check(path, filename):
+    metafile = '.{}.meta'.format(filename[0:-3])
+    metapath = os.path.join(path, metafile)
+    print(metapath)
+    if not os.path.isfile(metapath):
+        return MetaInfo()
+    print('using meta file: {}'.format(metapath))
+    return MetaInfo(metafile=metapath)
+
 def execute(cmd):
     subprocess.call(cmd.split())
+
+def pandoc_generator(md_in_path, pdf_out_path, meta):
+    print(' generate PDF {}'.format(pdf_out_path))
+    cmd = 'pandoc {} -o {}'.format(md_in_path, pdf_out_path)
+    execute(cmd)
 
 def process_document(args, path, filename):
     print('process {}'.format(os.path.join(path, filename)))
@@ -36,11 +63,10 @@ def process_document(args, path, filename):
         pdf_out_path = os.path.join(args.flat_out, "{}.pdf".format(filename[0:-3]))
     else:
         pdf_out_path = os.path.join(path, "{}.pdf".format(filename[0:-3]))
-    new = sanity_file(path, filename)
-    print(' generate PDF {}'.format(pdf_out_path))
-    cmd = 'pandoc {} -o {}'.format(new, pdf_out_path)
-    execute(cmd)
-    os.remove(new)
+    meta = meta_check(path, filename)
+    md_in_path = sanity_file(path, filename)
+    pandoc_generator(md_in_path, pdf_out_path, meta)
+    os.remove(md_in_path)
 
 def process_dir(args, path):
     for root, dirs, files in os.walk(path):
@@ -52,10 +78,19 @@ def process_dir(args, path):
 
 def process_filelist(args, filelist):
     for filename in filelist:
-        # if absolut pathname? If not add relative pathname
-        # to filename
-        # check if file exists, if not ignore it, warn user
-        pass
+        root = ''
+        if not filename.endswith('.md'):
+            print('no valid markdown file: {}, ignoring it'.format(filename))
+            continue
+        if not os.path.isfile(filename):
+            print('no valid file: {}, ignoring it'.format(filename))
+            continue
+        filename = os.path.basename(filename)
+        directory = os.path.dirname(filename)
+        if not directory:
+            directory = '.'
+        process_document(args, directory, filename)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
