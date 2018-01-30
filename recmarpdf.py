@@ -25,18 +25,38 @@ class MetaInfo:
             else:
                 raise Exception('template not supported')
 
+class MDObject:
+
+    def __init__(self, path):
+        self.path = path
+        self.lines = []
+        self.read()
+
+    def read(self):
+        content_new = ""
+        with open(self.path, 'r') as fd:
+            for line in fd:
+                self.lines.append(line)
+                #line_subst = sanity_ident_level(line)
+                #content_new += line_subst
+
+    def as_str(self):
+        s = ''
+        for line in self.lines:
+            s += line
+        return s
+
+def sanity_ident_level(line):
+    pass
 
 
 def sanity_file(path, filename):
     full = os.path.join(path, filename)
-    content_new = ""
-    with open(full, 'r') as fd:
-        for line in fd:
-            content_new += line
+    md_object = MDObject(full)
     newname = "{}-pandoc-modified-tmp.md".format(filename[0:-3])
     full_new = os.path.join(path, newname)
     fd = open(full_new, "w")
-    fd.write(content_new)
+    fd.write(md_object.as_str())
     fd.close()
     return full_new
 
