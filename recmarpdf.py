@@ -10,6 +10,7 @@ class MetaInfo:
 
     def __init__(self, metafile=None):
         self.template = 'modern'
+        self.title = None
         if metafile:
             self.init_metafile(metafile)
 
@@ -24,11 +25,15 @@ class MetaInfo:
                 self.template = 'modern'
             else:
                 raise Exception('template not supported')
+        if 'title' in data:
+            self.title = data['title']
 
 class MDObject:
 
-    def __init__(self, path):
+    def __init__(self, path, meta):
         self.path = path
+        self.meta = meta
+        self.title = 'unknown'
         self.lines = []
         self.read()
 
@@ -40,6 +45,30 @@ class MDObject:
                 #line_subst = sanity_ident_level(line)
                 #content_new += line_subst
 
+    def unident_and_title(self):
+        lines_updates = []
+        for line in self.lines:
+            if not line.startswith('#'):
+                lines_updates.append(line)
+                continue
+            words = line.split()
+            if len(words[0]) == 1:
+                # first level header
+                if self.title != 'unknown':
+                    # found a second, first level indent, which is
+                    # not allowed in this mode -> rollback
+                    print('invalid pattern, more first level heading detected')
+                    return
+                self.title = ' '.join(words[1:])
+                if not self.meta.title:
+                    # meta has precedence
+                    self.meta.title = self.title
+            elif len(words[0]) > 1:
+                words[0] = words[0][0:len(words[0]) - 1]
+                lines_updates.append(" ".join(words))
+        # seems legit, now update all lines
+        self.lines = lines_updates
+
     def as_str(self):
         s = ''
         for line in self.lines:
@@ -50,9 +79,10 @@ def sanity_ident_level(line):
     pass
 
 
-def sanity_file(path, filename):
+def sanity_file(path, filename, meta):
     full = os.path.join(path, filename)
-    md_object = MDObject(full)
+    md_object = MDObject(full, meta)
+    md_object.unident_and_title()
     newname = "{}-pandoc-modified-tmp.md".format(filename[0:-3])
     full_new = os.path.join(path, newname)
     fd = open(full_new, "w")
@@ -70,11 +100,18 @@ def meta_check(path, filename):
     return MetaInfo(metafile=metapath)
 
 def execute(cmd):
-    subprocess.call(cmd.split())
+    subprocess.call(cmd, shell=True)
 
 def pandoc_generator(md_in_path, pdf_out_path, meta):
     print(' generate PDF {}'.format(pdf_out_path))
-    cmd = 'pandoc {} -o {}'.format(md_in_path, pdf_out_path)
+    options  = '--toc-depth=6 '
+    options += '--base-header-level=1 '
+    options += '--standalone --smart '
+    options += '-V title=\'{}\' '.format(meta.title)
+    options += '--toc '
+    #options += '-V documentclass=report '
+    cmd = 'pandoc {} {} -o {}'.format(options, md_in_path, pdf_out_path)
+    print(cmd)
     execute(cmd)
 
 def process_document(args, path, filename):
@@ -84,7 +121,7 @@ def process_document(args, path, filename):
     else:
         pdf_out_path = os.path.join(path, "{}.pdf".format(filename[0:-3]))
     meta = meta_check(path, filename)
-    md_in_path = sanity_file(path, filename)
+    md_in_path = sanity_file(path, filename, meta)
     pandoc_generator(md_in_path, pdf_out_path, meta)
     os.remove(md_in_path)
 
