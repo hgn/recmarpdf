@@ -1,0 +1,47 @@
+\documentclass[
+  10pt,
+  parskip,
+  a4paper,
+  oneside,
+]{scrartcl}
+
+\usepackage[
+  %showframe,% Seitenlayout anzeigen
+  left=2cm,
+  right=2cm,
+  top=2.5cm,
+  bottom=2cm,
+]{geometry}
+
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\usepackage[T1]{fontenc}
+%\usepackage{iwona}
+%\usepackage{erewhon}
+%\usepackage{cmbright}
+%\usepackage{times}
+\usepackage{fourier}
+
+\definecolor{MSBlue}{rgb}{.204,.353,.541}
+\definecolor{MSLightBlue}{rgb}{.31,.506,.741}
+
+% use standard font as section font
+%\setkomafont{disposition}{\normalcolor}
+\setkomafont{disposition}{\color{MSBlue}}
+
+% remove section numbers
+\makeatletter
+\renewcommand{\@seccntformat}[1]{}
+\makeatother
+
+% required for pandoc
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+\begin{document}  
+$body$
+\end{document}
