@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import os
 import subprocess
@@ -7,6 +7,8 @@ import sys
 import json
 import tempfile
 import shutil
+import re
+import pathlib
 
 class MetaInfo:
 
@@ -61,8 +63,6 @@ class MDObject:
             for line in fd:
                 self._check_has_only_one_h1(line)
                 self.lines.append(line)
-                #line_subst = sanity_ident_level(line)
-                #content_new += line_subst
 
     def unident(self):
         '''h2 -> h1, h3 -> h2, ... '''
@@ -83,17 +83,55 @@ class MDObject:
         # seems legit, now update all lines
         self.lines = lines_updates
 
-    def as_str(self):
+    def _as_str(self):
         s = ''
         for line in self.lines:
             s += line
         return s
 
-def sanity_ident_level(line):
-    pass
+    def save_modified(self, path):
+        fd = open(path, "w")
+        fd.write(self._as_str())
+        fd.close()
+
+    def set_clone_path(self, path):
+        self.clone_path = path
+
+    def set_md_path(self, path):
+        self.md_path = path
+
+    def copy_clone_files(self):
+        for i, line in enumerate(self.lines):
+            regex = '!\[(.*)\]\((.*)\)'
+            m = re.search(regex, line)
+            if not m:
+                continue
+            alt = m.group(1)
+            img = m.group(2)
+            if img[-3:] not in ('gif', 'png', 'svg', 'pdf', 'jpg') and img[-4:] != 'jpeg':
+                continue
+            full = os.path.join(self.md_path, img)
+            clone_full = pathlib.Path(self.clone_path, full)
+            os.makedirs(os.path.dirname(clone_full), exist_ok=True)
+            if img[-3:] != 'svg':
+                if not os.path.isfile(full):
+                    raise
+                shutil.copyfile(full, clone_path)
+                self.lines[i] = '![{}]({})'.format(alt, clone_full)
+            else: # SVG
+                clone_path = pathlib.Path(str(clone_full)[:-3] + 'pdf')
+                self.svg_to_pdf(full, clone_path)
+                self.lines[i] = '![{}]({})\n'.format(alt, clone_path)
+            print(clone_full)
+
+    def svg_to_pdf(self, svg_in, pdf_out):
+        cmd = 'inkscape {} -A {}'.format(svg_in, pdf_out)
+        execute(cmd)
 
 
-def sanity_file(path, filename, meta):
+
+
+def prepare_file(args, path, filename, meta):
     full = os.path.join(path, filename)
     md_object = MDObject(full)
     if md_object.has_exactly_one_h1():
@@ -108,10 +146,12 @@ def sanity_file(path, filename, meta):
         # do nothing for now
         pass
     newname = "{}-pandoc-modified-tmp.md".format(filename[0:-3])
-    full_new = os.path.join(path, newname)
-    fd = open(full_new, "w")
-    fd.write(md_object.as_str())
-    fd.close()
+    full_new = os.path.join(args.tmpdir, path, newname)
+    os.makedirs(os.path.join(args.tmpdir, path), exist_ok=True)
+    md_object.set_clone_path(args.tmpdir)
+    md_object.set_md_path(path)
+    md_object.copy_clone_files()
+    md_object.save_modified(full_new)
     return full_new
 
 def meta_check(path, filename):
@@ -151,9 +191,8 @@ def process_document(args, path, filename):
     else:
         pdf_out_path = os.path.join(path, "{}.pdf".format(filename[0:-3]))
     meta = meta_check(path, filename)
-    md_in_path = sanity_file(path, filename, meta)
+    md_in_path = prepare_file(args, path, filename, meta)
     pandoc_generator(md_in_path, pdf_out_path, meta)
-    os.remove(md_in_path)
 
 def process_dir(args, path):
     for root, dirs, files in os.walk(path):
@@ -198,7 +237,7 @@ def main():
         process_dir(args, ".")
     else:
         process_filelist(args, args.documents)
-    shutil.rmtree(args.tmpdir)
+    #shutil.rmtree(args.tmpdir)
 
 if __name__ == '__main__':
   main()
