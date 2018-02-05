@@ -40,8 +40,26 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+% title, author and date specific section
+$if(title)$
+\title{$title$}
+$endif$
+\author{$for(author)$$author$$sep$\\$endfor$}
+$if(date)$
+\date{$date$}
+$endif$
 
+\begin{document}
 
-\begin{document}  
+$if(title)$
+\maketitle
+% generate TOC only if title is given -> keep document tight
+%$if(toc)$
+%\setcounter{tocdepth}{1}
+%\tableofcontents
+$endif$
+
+$endif$
+
 $body$
 \end{document}
