@@ -1,3 +1,4 @@
+%!TEX TS-program = xelatex
 % see https://gist.github.com/michaelt/1017790
 \documentclass[
   10pt,
@@ -14,9 +15,18 @@
   bottom=2cm,
 ]{geometry}
 
+
 \usepackage{longtable}
 \usepackage{booktabs}
 \usepackage{xcolor}
+\usepackage{amsmath}
+
+\usepackage[toc]{multitoc}
+\renewcommand*{\multicolumntoc}{2}
+%\setlength{\columnseprule}{0.5pt}
+
+% inconsolata as monospace font - great
+\usepackage{inconsolata}
 
 \usepackage[T1]{fontenc}
 %\usepackage{iwona}
@@ -54,6 +64,13 @@ $endif$
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
+% dots are not displayed in TOC, add it now
+\usepackage{tocloft}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+% don"t set in bfseries
+\renewcommand{\cftsecfont}{\mdseries}
+\renewcommand{\contentsname}{}
+
 % title, author and date specific section
 $if(title)$
 \title{$title$}
@@ -68,9 +85,9 @@ $endif$
 $if(title)$
 \maketitle
 % generate TOC only if title is given -> keep document tight
-%$if(toc)$
-%\setcounter{tocdepth}{1}
-%\tableofcontents
+$if(toc)$
+\setcounter{tocdepth}{1}
+\tableofcontents
 $endif$
 
 $endif$
