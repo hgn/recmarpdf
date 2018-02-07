@@ -21,6 +21,9 @@
 \usepackage{xcolor}
 \usepackage{amsmath}
 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
 \usepackage[toc]{multitoc}
 \renewcommand*{\multicolumntoc}{2}
 %\setlength{\columnseprule}{0.5pt}
@@ -47,7 +50,6 @@
 \renewcommand{\@seccntformat}[1]{}
 \makeatother
 
-\usepackage{graphicx}
 
 $if(graphics)$
 \usepackage{graphicx}
@@ -61,6 +63,11 @@ $if(graphics)$
 \let\Oldincludegraphics\includegraphics
 \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
 $endif$
+
+%\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\setlength\headheight{26pt}
+\rhead{\Oldincludegraphics[width=\textwidth]{logo.pdf}}
 
 % required for pandoc
 \providecommand{\tightlist}{%
@@ -84,6 +91,7 @@ $endif$
 
 \begin{document}
 
+
 $if(title)$
 \maketitle
 % generate TOC only if title is given -> keep document tight
@@ -92,13 +100,6 @@ $if(toc)$
 \tableofcontents
 $endif$
 $endif$
-
-\begin{picture}(0,0)
-	\put(0, 300){\Oldincludegraphics[width=\textwidth]{logo}}
-\end{picture}
-
-
-%\includegraphics{logo}
 
 $body$
 \end{document}
