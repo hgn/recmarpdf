@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="245.2607mm"
+   height="10.021934mm"
+   viewBox="0 0 245.2607 10.021934"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 (5c3e80d, 2017-08-06)"
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="570.932"
-     inkscape:cy="902.8997"
+     inkscape:zoom="1.4"
+     inkscape:cx="471.02905"
+     inkscape:cy="19.072912"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -37,10 +37,16 @@
      inkscape:window-height="1013"
      inkscape:window-x="0"
      inkscape:window-y="33"
-     inkscape:window-maximized="1">
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
     <inkscape:grid
        type="xygrid"
-       id="grid851" />
+       id="grid851"
+       originx="-0.80180862"
+       originy="-238.65418" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -57,27 +63,29 @@
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(-0.8018086,-48.323898)">
     <rect
-       style="opacity:1;fill:#2980b9;fill-opacity:1;stroke:none;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:0.90000003, 0.90000002999999984;stroke-dashoffset:0;stroke-opacity:0.35643568"
+       style="opacity:1;fill:#2980b9;fill-opacity:1;stroke:none;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:0.90000003, 0.90000003;stroke-dashoffset:0;stroke-opacity:0.35643568"
        id="rect815"
-       width="246.0625"
-       height="13.229168"
-       x="0"
-       y="45.645832"
-       rx="2.0000012"
-       ry="2.0000012" />
+       width="245.2607"
+       height="10.021934"
+       x="0.8018086"
+       y="48.323898"
+       rx="1"
+       ry="1" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.69999981px;line-height:125%;font-family:'URW Gothic L';-inkscape-font-specification:'URW Gothic L';letter-spacing:0px;word-spacing:0px;fill:#ecf0f1;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="6.5767837"
-       y="57.136311"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:7.05555534px;line-height:125%;font-family:'URW Gothic L';-inkscape-font-specification:'URW Gothic L';letter-spacing:0px;word-spacing:0px;fill:#ecf0f1;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="6.047617"
+       y="55.548809"
        id="text823"><tspan
          sodipodi:role="line"
          id="tspan821"
-         x="6.5767837"
-         y="57.136311"
-         style="font-size:12.69999981px;fill:#ecf0f1;stroke-width:0.26458332px">Foo Bar</tspan></text>
+         x="6.047617"
+         y="55.548809"
+         style="font-size:7.05555534px;fill:#ecf0f1;stroke-width:0.26458332px"
+         dx="0 0 0 0 0 0 0 0 0.56696427">ProtocolLabs</tspan></text>
     <rect
        style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.30000001;stroke-miterlimit:4;stroke-dasharray:0.90000003, 0.90000003;stroke-dashoffset:0;stroke-opacity:0.35643568"
        id="rect825"
