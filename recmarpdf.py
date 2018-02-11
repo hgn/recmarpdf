@@ -9,6 +9,10 @@ import tempfile
 import shutil
 import re
 import pathlib
+import datetime
+
+EXIT_SUCCESS = 0
+EXIT_FAILURE = 1
 
 class MetaInfo:
 
@@ -186,10 +190,13 @@ def pandoc_generator(md_in_path, pdf_out_path, meta):
 
 def process_document(args, path, filename):
     print('process {}'.format(os.path.join(path, filename)))
+    now = datetime.datetime.utcnow()
+    date = '{:04d}-{:02d}-{:02d}'.format(now.year, now.month, now.day)
+    new_doc_name = "{}-{}.pdf".format(date, filename[0:-3])
     if args.flat_out:
-        pdf_out_path = os.path.join(args.flat_out, "{}.pdf".format(filename[0:-3]))
+        pdf_out_path = os.path.join(args.flat_out, new_doc_name)
     else:
-        pdf_out_path = os.path.join(path, "{}.pdf".format(filename[0:-3]))
+        pdf_out_path = os.path.join(path, new_doc_name)
     meta = meta_check(path, filename)
     md_in_path = prepare_file(args, path, filename, meta)
     pandoc_generator(md_in_path, pdf_out_path, meta)
@@ -202,42 +209,47 @@ def process_dir(args, path):
                 continue
             process_document(args, root, filename)
 
-def process_filelist(args, filelist):
-    for filename in filelist:
-        root = ''
-        if not filename.endswith('.md'):
-            print('no valid markdown file: {}, ignoring it'.format(filename))
-            continue
-        if not os.path.isfile(filename):
-            print('no valid file: {}, ignoring it'.format(filename))
-            continue
-        filename = os.path.basename(filename)
-        directory = os.path.dirname(filename)
-        if not directory:
-            directory = '.'
-        process_document(args, directory, filename)
-
-
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--flat-out", nargs='?', type=str, default=None)
-    parser.add_argument("--documents", nargs='?', type=str, default=None)
     args = parser.parse_args()
-    if args.documents:
-        args.documents = filter(None, args.documents.split(','))
     return args
 
+def process_stdin_list(args):
+    try:
+        filelist = json.load(sys.stdin)
+    except Exception:
+        print('json error in piped data, exit premature')
+        return EXIT_FAILURE
+    for fileentry in filelist:
+        if not 'filename' in fileentry:
+            print('not a valid entry in {}'.format(fileentry))
+            continue
+        path = fileentry['filename']
+        root = ''
+        if not path.endswith('.md'):
+            print('no valid markdown file: {}, ignoring it'.format(path))
+            continue
+        if not path.startswith('/'):
+            print('filepath must starts /: {}, ignoring it'.format(path))
+            continue
+        if not os.path.isfile(path):
+            print('no valid file: {}, ignoring it'.format(path))
+            continue
+        filename = os.path.basename(path)
+        directory = os.path.dirname(path)
+        process_document(args, directory, filename)
+
 def main():
+    ret = EXIT_SUCCESS
     args = parse_args()
     if args.flat_out and not os.path.exists(args.flat_out):
-        print('generate directory {}'.format(args.flat_out))
+        print('generate new directory {}'.format(args.flat_out))
         os.makedirs(args.flat_out)
     args.tmpdir = tempfile.mkdtemp()
-    if not args.documents:
-        process_dir(args, ".")
-    else:
-        process_filelist(args, args.documents)
-    #shutil.rmtree(args.tmpdir)
+    ret = process_stdin_list(args)
+    shutil.rmtree(args.tmpdir)
+    sys.exit(ret)
 
 if __name__ == '__main__':
   main()
