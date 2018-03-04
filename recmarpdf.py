@@ -29,7 +29,7 @@ class MetaInfo(object):
     def __init__(self, metafile=None):
         self.cd_template()
         self.init_templates()
-        self.default_template = 'modern'
+        self.default_template = 'technical'
         self.title = None
         if metafile:
             self.init_metafile(metafile)
@@ -48,7 +48,7 @@ class MetaInfo(object):
             return json.load(fd)
 
     def template_path(self):
-        if not self.template in self.templates:
+        if not hasattr(self, 'template'):
             return self.templates[self.default_template]['path']
         return self.templates[self.template]['path']
 

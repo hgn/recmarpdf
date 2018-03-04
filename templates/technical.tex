@@ -12,7 +12,7 @@
   left=2cm,
   right=2cm,
   top=2.5cm,
-  bottom=2cm,
+  bottom=4cm,
 ]{geometry}
 
 
@@ -24,12 +24,10 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
-\usepackage[toc]{multitoc}
-\renewcommand*{\multicolumntoc}{2}
+%\usepackage[toc]{multitoc}
+%\renewcommand*{\multicolumntoc}{2}
 %\setlength{\columnseprule}{0.5pt}
 
-% inconsolata as monospace font - great
-\usepackage{inconsolata}
 
 \usepackage[T1]{fontenc}
 %\usepackage{iwona}
@@ -38,20 +36,21 @@
 %\usepackage{times}
 \usepackage{fourier}
 
+% inconsolata as monospace font - great
+\usepackage{inconsolata}
+
 \definecolor{MSBlue}{rgb}{.204,.353,.541}
 \definecolor{MSLightBlue}{rgb}{.31,.506,.741}
 
 % use standard font as section font
 %\setkomafont{disposition}{\normalcolor}
-\setkomafont{disposition}{\color{MSBlue}}
+%\setkomafont{disposition}{\color{MSBlue}}
 
 % remove section numbers
 \makeatletter
 \renewcommand{\@seccntformat}[1]{}
 \makeatother
 
-
-$if(graphics)$
 \usepackage{graphicx}
 % -- We will generate all images so they have a width \maxwidth. This means
 % -- that they will get their normal width if they fit onto the page, but
@@ -62,7 +61,6 @@ $if(graphics)$
 \makeatother
 \let\Oldincludegraphics\includegraphics
 \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
-$endif$
 
 %\fancyhf{} % sets both header and footer to nothing
 \renewcommand{\headrulewidth}{0pt}
@@ -74,11 +72,11 @@ $endif$
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 % dots are not displayed in TOC, add it now
-\usepackage{tocloft}
-\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+%\usepackage{tocloft}
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
 % don"t set in bfseries
-\renewcommand{\cftsecfont}{\mdseries}
-\renewcommand{\contentsname}{}
+%\renewcommand{\cftsecfont}{\mdseries}
+%\renewcommand{\contentsname}{}
 
 % title, author and date specific section
 $if(title)$
@@ -90,15 +88,29 @@ $if(date)$
 $endif$
 
 \begin{document}
+\begin{titlepage}
+	\begin{picture}(0,0)
+		\put(-45, -740){\Oldincludegraphics[width=0.95\paperwidth]{artwork-technical-titlepage.pdf}}
+	\end{picture}
 
+	\begin{flushleft}
+		{
+		\sffamily
+		{\Huge \color{MSBlue}$title$}\\
+		\vspace{1.0cm}
+		Hagen Pfeifer <hagen@jauu.net>
+		}
 
-$if(title)$
-\maketitle
+	\vfill
+	\end{flushleft}
+
+\end{titlepage}
+
 % generate TOC only if title is given -> keep document tight
 $if(toc)$
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
 \tableofcontents
-$endif$
+\newpage
 $endif$
 
 $body$
